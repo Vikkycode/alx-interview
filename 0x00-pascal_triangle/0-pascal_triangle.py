@@ -1,4 +1,4 @@
-def generate_pascals_triangle_optimized(n):
+def pascal_triangle(n):
     """Generates Pascal's Triangle with n rows using optimized space."""
     
     if n <= 0:
