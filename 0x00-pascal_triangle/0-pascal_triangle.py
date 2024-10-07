@@ -2,9 +2,9 @@ def pascal_triangle(n):
     """Generates Pascal's Triangle with n rows using optimized space."""
     
     if n <= 0:
-        return []  # Return an empty triangle for non-positive n
+        return []  
 
-    triangle = []  # List to hold the final triangle
+    triangle = [] 
     
     # Start with the first row
     previous_row = [1]
