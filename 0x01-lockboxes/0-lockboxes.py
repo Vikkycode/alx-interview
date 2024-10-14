@@ -1,5 +1,6 @@
 #!/usr/bin/python
 """ canUnlockAll function """
+from collections import deque
 
 
 def canUnlockAll(boxes):
@@ -10,14 +11,18 @@ def canUnlockAll(boxes):
     bool: True if all boxes can be unlocked otherwise return False
     """
 
-    opened = set([0])
-    closed = set(boxes[0]).difference(opened)
+    num = len(boxes)
+    open_boxes = set()
+    open_boxes.add(0)
 
-    while len(closed) > 0:
-        key = closed.pop()
+    quene = deque([0])
 
-        if key not in open:
-            opened.add(key)
-            closed = closed.union(boxes[key]).difference(opened)
+    while quene:
+        curr_box = quene.popleft()
 
-    return len(opened) == len(boxes)
+        for key in boxes[curr_box]:
+            if key < num and key not in open_boxes:
+                open_boxes.add(key)
+                quene.append(key)
+
+    return len(open_boxes) == num
