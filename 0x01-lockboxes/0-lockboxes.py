@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """ canUnlockAll function """
 from collections import deque
 
@@ -9,9 +9,8 @@ def canUnlockAll(boxes):
     """
 
     num = len(boxes)
-    
     open_boxes = set()
-    
+
     open_boxes.add(0)
 
     quene = deque([0])
