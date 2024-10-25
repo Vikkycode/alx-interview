@@ -1,49 +1,68 @@
-#!/usr/bin/env python3
-"""Parse logs, compute metrics."""
+#!/usr/bin/python3
+"""Write a script that reads stdin line by line and computes metrics:
+
+Input format: <IP Address> - [<date>] "GET /projects/260 HTTP/1.1"
+<status code> <file size> (if the format is not this one, the line
+must be skipped)
+After every 10 lines and/or a keyboard interruption (CTRL + C),
+print these statistics from the beginning:
+Total file size: File size: <total size>
+where <total size> is the sum of all previous <file size>
+(see input format above)
+Number of lines by status code:
+possible status code: 200, 301, 400, 401, 403, 404, 405 and 500
+if a status code doesn’t appear or is not an integer,
+don’t print anything for this status code
+format: <status code>: <number>
+status codes should be printed in ascending order
+
+line list = [<IP Address>, -, [<date>], "GET /projects/260 HTTP/1.1",
+<status code>, <file size>]
+"""
+
+
 import sys
-import signal
-import re
 
+# store the count of all status codes in a dictionary
+status_codes_dict = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0,
+                     '404': 0, '405': 0, '500': 0}
 
-def show_stats(file_size, status_counts):
-    """Print accumulated statistics."""
-    print(f"File size: {file_size}")
-    for code in sorted(status_counts):
-        print(f"{code}: {status_counts[code]}")
+total_size = 0
+count = 0  # keep count of the number lines counted
 
-
-def parse_log_line(line, file_size, status_counts):
-    """Extract data from a single log line."""
-    try:
-        match = re.search(r'"\S+ \S+ \S+" (\d+) (\d+)', line)
-        if not match:
-            return file_size, status_counts
-        status_code, size = map(int, match.groups())
-        file_size += size
-        status_counts[status_code] = status_counts.get(status_code, 0) + 1
-        return file_size, status_counts
-    except (ValueError, IndexError):
-        return file_size, status_counts
-
-
-def handle_interrupt(sig, frame, file_size, status_counts):
-    """Handle SIGINT (CTRL+C) signal."""
-    show_stats(file_size, status_counts)
-    sys.exit(0)
-
-
-if __name__ == "__main__":
-    file_size_total = 0
-    status_code_counts = {}
-    signal.signal(signal.SIGINT, lambda sig, frame: (
-        handle_interrupt(sig, frame, file_size_total, status_code_counts))
-    )
-    count = 0
+try:
     for line in sys.stdin:
-        count += 1
-        file_size_total, status_code_counts = (
-            parse_log_line(line, file_size_total, status_code_counts)
-        )
-        if count % 10 == 0:
-            show_stats(file_size_total, status_code_counts)
-    show_stats(file_size_total, status_code_counts)
+        line_list = line.split(" ")
+
+        if len(line_list) > 4:
+            status_code = line_list[-2]
+            file_size = int(line_list[-1])
+
+            # check if the status code receive exists in the dictionary and
+            # increment its count
+            if status_code in status_codes_dict.keys():
+                status_codes_dict[status_code] += 1
+
+            # update total size
+            total_size += file_size
+
+            # update count of lines
+            count += 1
+
+        if count == 10:
+            count = 0  # reset count
+            print('File size: {}'.format(total_size))
+
+            # print out status code counts
+            for key, value in sorted(status_codes_dict.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
+
+except Exception as err:
+    pass
+
+finally:
+    print('File size: {}'.format(total_size))
+    for key, value in sorted(status_codes_dict.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))
