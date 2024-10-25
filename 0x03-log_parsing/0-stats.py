@@ -7,11 +7,13 @@ import re
 total_file_size = 0
 status_codes = {}
 
+
 def display_statistics():
     """Display the accumulated statistics."""
     print(f"File size: {total_file_size}")
     for status_code in sorted(status_codes.keys()):
         print(f"{status_code}: {status_codes[status_code]}")
+
 
 def process_line(line):
     """Process a single log line."""
@@ -26,10 +28,13 @@ def process_line(line):
     except (ValueError, IndexError):
         return
 
+
 def signal_handler(sig, frame):
     """Handle SIGINT (CTRL+C) signal."""
     display_statistics()
+
     sys.exit(0)
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
