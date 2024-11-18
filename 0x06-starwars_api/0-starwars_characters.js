@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 const request = require('request');
 
 function fetchCharacterName(url) {
@@ -49,4 +51,3 @@ if (!movieId) {
 } else {
   getCharacters(movieId);
 }
-
