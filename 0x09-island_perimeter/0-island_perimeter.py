@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 def island_perimeter(grid):
     """
     Calculates the perimeter of an island represented by a grid.
