@@ -1,41 +1,40 @@
 def isWinner(x, nums):
+    if not nums or x <= 0:
+        return None
+
     maria_wins = 0
     ben_wins = 0
 
     for n in nums:
-        primes = []
-        sieve = [True] * (n + 1)  # Sieve of Eratosthenes optimization
-        sieve[0] = sieve[1] = False
-        for i in range(2, int(n**0.5) + 1):
-            if sieve[i]:
-                for multiple in range(i * i, n + 1, i):
-                    sieve[multiple] = False
-
-        for i in range(2, n + 1):
-            if sieve[i]:
-                primes.append(i)
-
-        set_nums = list(range(1, n + 1))
+        available_numbers = list(range(1, n + 1))
         turns = 0
+
         while True:
-            found_prime = False
-            for prime in primes:
-                if prime in set_nums:
-                    remove_multiples = []
-                    for num in set_nums:
-                        if num % prime == 0:
-                            remove_multiples.append(num)
+            prime_found = False
+            for p in range(2, n + 1):
+                is_prime = True
+                for i in range(2, int(p**0.5) + 1):
+                    if p % i == 0:
+                        is_prime = False
+                        break
+                if is_prime and p in available_numbers:
 
-                    for num_to_remove in remove_multiples:
-                        set_nums.remove(num_to_remove)
-                    found_prime = True
+                    nums_to_remove = []
+                    for num in available_numbers:
+                        if num % p == 0:
+                            nums_to_remove.append(num)
+
+                    for num in nums_to_remove:
+                        available_numbers.remove(num)
+
+                    prime_found = True
                     turns += 1
-                    break
+                    break  # Move on to next player's turn
 
-            if not found_prime:
+            if not prime_found:
                 break
 
-        if turns % 2 == 1:
+        if turns % 2 != 0:
             maria_wins += 1
         else:
             ben_wins += 1
